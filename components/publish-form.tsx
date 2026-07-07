@@ -1,0 +1,302 @@
+"use client";
+
+import { useState, type FormEvent, type ReactNode } from "react";
+import { CATEGORY_OPTIONS, LLM_OPTIONS, Category, Llm } from "@/lib/types";
+import { generateConversationId } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
+import {
+  validateShareUrl,
+  validateTitle,
+  validateSummary,
+  validateEmail,
+  validateRequired,
+} from "@/lib/validation";
+import { CheckCircle2, X, Loader2 } from "lucide-react";
+
+type FormState = {
+  shareUrl: string;
+  title: string;
+  submissionDate: string;
+  llm: Llm | "";
+  category: Category | "";
+  summary: string;
+  publisherName: string;
+  publisherEmail: string;
+};
+
+const INITIAL: FormState = {
+  shareUrl: "",
+  title: "",
+  submissionDate: new Date().toISOString().slice(0, 10),
+  llm: "",
+  category: "",
+  summary: "",
+  publisherName: "",
+  publisherEmail: "",
+};
+
+export function PublishForm() {
+  const [form, setForm] = useState<FormState>(INITIAL);
+  const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
+
+  function update<K extends keyof FormState>(key: K, value: FormState[K]) {
+    setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  function validate(): boolean {
+    const next: Partial<Record<keyof FormState, string>> = {};
+    const shareUrlErr = validateShareUrl(form.shareUrl);
+    if (shareUrlErr) next.shareUrl = shareUrlErr;
+    const titleErr = validateTitle(form.title);
+    if (titleErr) next.title = titleErr;
+    const summaryErr = validateSummary(form.summary);
+    if (summaryErr) next.summary = summaryErr;
+    const emailErr = validateEmail(form.publisherEmail);
+    if (emailErr) next.publisherEmail = emailErr;
+    const dateErr = validateRequired(form.submissionDate, "Submission date");
+    if (dateErr) next.submissionDate = dateErr;
+    const llmErr = validateRequired(form.llm, "LLM");
+    if (llmErr) next.llm = llmErr;
+    const categoryErr = validateRequired(form.category, "Category");
+    if (categoryErr) next.category = categoryErr;
+
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!validate()) return;
+
+    setSubmitting(true);
+    const newId = generateConversationId();
+
+    try {
+      if (supabase) {
+        const { error } = await supabase.from("conversations").insert({
+          conversation_id: newId,
+          title: form.title.trim(),
+          summary: form.summary.trim(),
+          publisher_name: form.publisherName.trim() || null,
+          publisher_email: form.publisherEmail.trim() || null,
+          share_url: form.shareUrl.trim(),
+          llm: form.llm,
+          category: form.category,
+          submission_date: form.submissionDate,
+          status: "Pending",
+        });
+        if (error) throw error;
+      }
+      // No Supabase configured yet (local/dev) — still complete the flow
+      // so the UI can be reviewed end-to-end before credentials exist.
+      setConversationId(newId);
+      setForm(INITIAL);
+    } catch (err) {
+      setErrors({ shareUrl: "Something went wrong submitting your conversation. Try again." });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <section id="publish" className="px-5 py-20 md:px-8 md:py-28">
+      <div className="mx-auto max-w-3xl">
+        <div className="reveal">
+          <span className="text-xs uppercase tracking-[0.18em] text-gold">Publish</span>
+          <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-paper md:text-4xl">
+            Submit a conversation
+          </h2>
+          <p className="mt-3 text-sm leading-relaxed text-paper/60">
+            Share a valuable AI conversation with the Chive community. Only public share links are
+            accepted.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="reveal panel mt-8 grid gap-5 p-6 md:p-8">
+          <Field label="Share URL" required error={errors.shareUrl}>
+            <input
+              value={form.shareUrl}
+              onChange={(e) => update("shareUrl", e.target.value)}
+              placeholder="https://chatgpt.com/share/…"
+              className="chive-input"
+            />
+          </Field>
+
+          <Field label="Title" required error={errors.title}>
+            <input
+              value={form.title}
+              onChange={(e) => update("title", e.target.value)}
+              placeholder="What's this conversation about?"
+              className="chive-input"
+            />
+          </Field>
+
+          <div className="grid gap-5 md:grid-cols-2">
+            <Field label="Submission date" required error={errors.submissionDate}>
+              <input
+                type="date"
+                value={form.submissionDate}
+                onChange={(e) => update("submissionDate", e.target.value)}
+                className="chive-input"
+              />
+            </Field>
+
+            <Field label="LLM" required error={errors.llm}>
+              <select
+                value={form.llm}
+                onChange={(e) => update("llm", e.target.value as Llm)}
+                className="chive-input"
+              >
+                <option value="" disabled>
+                  Select a model
+                </option>
+                {LLM_OPTIONS.map((l) => (
+                  <option key={l} value={l}>
+                    {l}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          </div>
+
+          <Field label="Category" required error={errors.category}>
+            <select
+              value={form.category}
+              onChange={(e) => update("category", e.target.value as Category)}
+              className="chive-input"
+            >
+              <option value="" disabled>
+                Select a category
+              </option>
+              {CATEGORY_OPTIONS.map((c) => (
+                <option key={c} value={c}>
+                  {c}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field label="Summary" required error={errors.summary} hint={`${form.summary.length}/600`}>
+            <textarea
+              value={form.summary}
+              onChange={(e) => update("summary", e.target.value)}
+              rows={4}
+              placeholder="What makes this conversation worth reading?"
+              className="chive-input resize-none"
+            />
+          </Field>
+
+          <div className="grid gap-5 md:grid-cols-2">
+            <Field label="Publisher name" hint="Optional">
+              <input
+                value={form.publisherName}
+                onChange={(e) => update("publisherName", e.target.value)}
+                placeholder="Anonymous"
+                className="chive-input"
+              />
+            </Field>
+
+            <Field label="Publisher email" hint="Optional — never shown publicly" error={errors.publisherEmail}>
+              <input
+                type="email"
+                value={form.publisherEmail}
+                onChange={(e) => update("publisherEmail", e.target.value)}
+                placeholder="you@example.com"
+                className="chive-input"
+              />
+            </Field>
+          </div>
+
+          <p className="text-xs leading-relaxed text-paper/45">
+            By submitting, you confirm the share link is public, the content is safe, and you own
+            or have permission to share it. Review generally takes around 10 days.
+          </p>
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="key-button key-button-accent flex items-center justify-center gap-2 py-3.5 text-sm font-semibold disabled:opacity-60"
+          >
+            {submitting && <Loader2 size={16} className="animate-spin" />}
+            {submitting ? "Submitting…" : "Submit conversation"}
+          </button>
+        </form>
+      </div>
+
+      {conversationId && (
+        <SuccessModal conversationId={conversationId} onClose={() => setConversationId(null)} />
+      )}
+    </section>
+  );
+}
+
+function Field({
+  label,
+  required,
+  error,
+  hint,
+  children,
+}: {
+  label: string;
+  required?: boolean;
+  error?: string;
+  hint?: string;
+  children: ReactNode;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 flex items-center justify-between text-sm text-paper/75">
+        <span>
+          {label} {required && <span className="text-gold">*</span>}
+        </span>
+        {hint && <span className="text-xs text-paper/35">{hint}</span>}
+      </span>
+      {children}
+      {error && <span className="mt-1.5 block text-xs text-red-400">{error}</span>}
+    </label>
+  );
+}
+
+function SuccessModal({ conversationId, onClose }: { conversationId: string; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-5">
+      <div className="panel relative w-full max-w-md p-7 text-center">
+        <button
+          onClick={onClose}
+          aria-label="Close"
+          className="key-button absolute right-4 top-4 flex h-8 w-8 items-center justify-center text-paper/70"
+        >
+          <X size={15} />
+        </button>
+
+        <CheckCircle2 className="mx-auto text-mint" size={40} />
+        <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl font-semibold text-paper">
+          Conversation submitted successfully
+        </h3>
+        <p className="mt-2 text-sm text-paper/60">
+          Your conversation has been received and is now awaiting review.
+        </p>
+
+        <div className="well mt-6 px-4 py-4">
+          <div className="led-text text-2xl">{conversationId}</div>
+        </div>
+
+        <p className="mt-4 text-xs leading-relaxed text-paper/45">
+          Save this Conversation ID — use it to search your submission, track whether it&apos;s
+          been published, or reference it when contacting Chive Support. Review generally takes
+          around 10 days.
+        </p>
+
+        <a
+          href="#top"
+          onClick={onClose}
+          className="key-button key-button-accent mt-6 block w-full py-3 text-sm font-semibold"
+        >
+          Back to homepage
+        </a>
+      </div>
+    </div>
+  );
+}
