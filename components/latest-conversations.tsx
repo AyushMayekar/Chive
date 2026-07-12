@@ -11,17 +11,22 @@ export function LatestConversations() {
       <div className="mx-auto max-w-6xl">
         <div className="reveal flex flex-wrap items-end justify-between gap-4">
           <div>
-            <span className="text-xs uppercase tracking-[0.18em] text-gold">Fresh off the wire</span>
-            <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-paper md:text-4xl">
+            <span className="text-xs font-semibold uppercase tracking-[0.22em] text-gold">
+              Fresh off the wire
+            </span>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-paper md:text-4xl">
               Latest conversations
             </h2>
           </div>
-          <a href="#browse" className="text-sm text-mint hover:underline">
+          <a
+  href="#browse"
+  className="text-sm font-medium text-mint transition-colors hover:text-gold hover:underline"
+>
             Browse all conversations →
           </a>
         </div>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
           {latest.map((c) => (
             <ConversationCard key={c.id} conversation={c} />
           ))}

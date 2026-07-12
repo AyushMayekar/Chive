@@ -12,6 +12,13 @@ import {
   validateRequired,
 } from "@/lib/validation";
 import { CheckCircle2, X, Loader2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type FormState = {
   shareUrl: string;
@@ -104,17 +111,20 @@ export function PublishForm() {
     <section id="publish" className="px-5 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-3xl">
         <div className="reveal">
-          <span className="text-xs uppercase tracking-[0.18em] text-gold">Publish</span>
-          <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-paper md:text-4xl">
+          <span className="text-xs font-semibold uppercase tracking-[0.22em] text-gold">Publish</span>
+          <h2 className="mt-3 font-[family-name:var(--font-display)] text-3xl font-bold tracking-tight text-paper md:text-4xl">
             Submit a conversation
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-paper/60">
+          <p className="mt-3 text-[15px] leading-7 text-paper/80">
             Share a valuable AI conversation with the Chive community. Only public share links are
             accepted.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="reveal panel mt-8 grid gap-5 p-6 md:p-8">
+        <form
+          onSubmit={handleSubmit}
+          className="reveal panel mt-8 grid gap-6 rounded-3xl p-7 md:p-9"
+        >
           <Field label="Share URL" required error={errors.shareUrl}>
             <input
               value={form.shareUrl}
@@ -144,38 +154,42 @@ export function PublishForm() {
             </Field>
 
             <Field label="LLM" required error={errors.llm}>
-              <select
+              <Select
                 value={form.llm}
-                onChange={(e) => update("llm", e.target.value as Llm)}
-                className="chive-input"
+                onValueChange={(value) => update("llm", value as Llm)}
               >
-                <option value="" disabled>
-                  Select a model
-                </option>
-                {LLM_OPTIONS.map((l) => (
-                  <option key={l} value={l}>
-                    {l}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger className="chive-input flex h-12 items-center justify-between rounded-2xl">
+                  <SelectValue placeholder="Select a model" />
+                </SelectTrigger>
+
+                <SelectContent>
+                  {LLM_OPTIONS.map((l) => (
+                    <SelectItem key={l} value={l}>
+                      {l}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
           </div>
 
           <Field label="Category" required error={errors.category}>
-            <select
+            <Select
               value={form.category}
-              onChange={(e) => update("category", e.target.value as Category)}
-              className="chive-input"
+              onValueChange={(value) => update("category", value as Category)}
             >
-              <option value="" disabled>
-                Select a category
-              </option>
-              {CATEGORY_OPTIONS.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger className="chive-input flex h-12 items-center justify-between rounded-2xl">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {CATEGORY_OPTIONS.map((c) => (
+                  <SelectItem key={c} value={c}>
+                    {c}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </Field>
 
           <Field label="Summary" required error={errors.summary} hint={`${form.summary.length}/600`}>
@@ -209,7 +223,7 @@ export function PublishForm() {
             </Field>
           </div>
 
-          <p className="text-xs leading-relaxed text-paper/45">
+          <p className="rounded-2xl border border-surface-line bg-surface/40 px-4 py-3 text-sm leading-6 text-paper/75">
             By submitting, you confirm the share link is public, the content is safe, and you own
             or have permission to share it. Review generally takes around 10 days.
           </p>
@@ -217,7 +231,7 @@ export function PublishForm() {
           <button
             type="submit"
             disabled={submitting}
-            className="key-button key-button-accent flex items-center justify-center gap-2 py-3.5 text-sm font-semibold disabled:opacity-60"
+            className="key-button key-button-accent flex items-center justify-center gap-2 py-3.5 text-sm font-semibold shadow-md transition-all hover:scale-[1.01] hover:shadow-lg disabled:opacity-60"
           >
             {submitting && <Loader2 size={16} className="animate-spin" />}
             {submitting ? "Submitting…" : "Submit conversation"}
@@ -247,11 +261,11 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 flex items-center justify-between text-sm text-paper/75">
+      <span className="mb-2 flex items-center justify-between text-sm font-medium text-paper/90">
         <span>
           {label} {required && <span className="text-gold">*</span>}
         </span>
-        {hint && <span className="text-xs text-paper/35">{hint}</span>}
+        {hint && <span className="text-xs text-paper/55">{hint}</span>}
       </span>
       {children}
       {error && <span className="mt-1.5 block text-xs text-red-400">{error}</span>}
@@ -262,7 +276,7 @@ function Field({
 function SuccessModal({ conversationId, onClose }: { conversationId: string; onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-5">
-      <div className="panel relative w-full max-w-md p-7 text-center">
+      <div className="panel relative w-full max-w-md rounded-3xl p-8 text-center shadow-2xl">
         <button
           onClick={onClose}
           aria-label="Close"
@@ -272,18 +286,18 @@ function SuccessModal({ conversationId, onClose }: { conversationId: string; onC
         </button>
 
         <CheckCircle2 className="mx-auto text-mint" size={40} />
-        <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl font-semibold text-paper">
+        <h3 className="mt-4 font-[family-name:var(--font-display)] text-xl font-bold text-paper">
           Conversation submitted successfully
         </h3>
-        <p className="mt-2 text-sm text-paper/60">
+        <p className="mt-3 text-[15px] leading-6 text-paper/80">
           Your conversation has been received and is now awaiting review.
         </p>
 
-        <div className="well mt-6 px-4 py-4">
+        <div className="well mt-6 rounded-2xl border border-mint/15 px-4 py-5">
           <div className="led-text text-2xl">{conversationId}</div>
         </div>
 
-        <p className="mt-4 text-xs leading-relaxed text-paper/45">
+        <p className="mt-5 rounded-xl bg-surface/40 px-4 py-3 text-sm leading-6 text-paper/75">
           Save this Conversation ID — use it to search your submission, track whether it&apos;s
           been published, or reference it when contacting Chive Support. Review generally takes
           around 10 days.
@@ -292,7 +306,7 @@ function SuccessModal({ conversationId, onClose }: { conversationId: string; onC
         <a
           href="#top"
           onClick={onClose}
-          className="key-button key-button-accent mt-6 block w-full py-3 text-sm font-semibold"
+          className="key-button key-button-accent mt-6 block w-full py-3 text-sm font-semibold shadow-md transition-all hover:scale-[1.01]"
         >
           Back to homepage
         </a>

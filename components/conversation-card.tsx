@@ -14,27 +14,27 @@ export function ConversationCard({ conversation }: { conversation: Conversation 
   return (
     <Link
       href={`/chat/${conversation.conversation_id}`}
-      className="panel panel-hover reveal flex flex-col p-5"
+      className="group panel panel-hover reveal flex flex-col rounded-3xl p-6 will-change-transform"
     >
       <div className="flex items-center justify-between gap-3">
         <span
-          className={`rounded-full border px-2.5 py-1 text-[11px] font-medium ${LLM_BADGE_COLOR[conversation.llm]}`}
+          className={`rounded-full border px-3 py-1 text-xs font-semibold ${LLM_BADGE_COLOR[conversation.llm]}`}
         >
           {conversation.llm}
         </span>
-        <span className="led-text-dim text-[11px]">{conversation.conversation_id}</span>
+        <span className="led-text-dim text-xs font-semibold tracking-wide">{conversation.conversation_id}</span>
       </div>
 
-      <h3 className="mt-4 font-[family-name:var(--font-display)] text-base font-semibold leading-snug text-paper">
+      <h3 className="mt-4 font-[family-name:var(--font-display)] text-lg font-bold leading-snug text-paper">
         {conversation.title}
       </h3>
-      <p className="mt-2 flex-1 text-sm leading-relaxed text-paper/55">{conversation.summary}</p>
+      <p className="mt-3 flex-1 text-[15px] leading-7 text-paper/80">{conversation.summary}</p>
 
-      <div className="mt-5 flex items-center justify-between border-t border-surface-line pt-4 text-xs text-paper/45">
+      <div className="mt-6 flex items-center justify-between border-t border-surface-line pt-5 text-sm text-paper/70">
         <span>{conversation.category}</span>
-        <span className="inline-flex items-center gap-1 text-paper/60">
+        <span className="inline-flex items-center gap-1.5 font-medium text-paper/85">
           {conversation.publisher_name ?? "Anonymous"}
-          <ArrowUpRight size={13} className="text-mint" />
+          <ArrowUpRight size={15} className="text-mint transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
         </span>
       </div>
     </Link>

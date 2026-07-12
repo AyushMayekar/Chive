@@ -40,12 +40,12 @@ export function Hero() {
             <br />
             <span className="text-mint">Chive</span> them.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-paper/65 md:text-lg">
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-paper/80 md:text-lg">
             Discover valuable AI conversations from developers, researchers, students, founders
             and curious minds — sourced from ChatGPT, Claude, Gemini, Perplexity and DeepSeek.
           </p>
 
-          <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-paper/55">
+          <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-paper/75">
             <li>Search conversations</li>
             <li>Browse latest submissions</li>
             <li>Find by Conversation ID</li>
@@ -54,22 +54,27 @@ export function Hero() {
         </div>
 
         <div className="reveal panel p-6 md:p-7">
-          <div className="mb-5 flex items-center gap-1 rounded-full border border-surface-line bg-ink p-1 text-xs">
+          <div
+            className="mb-5 flex items-center gap-1 rounded-full border border-surface-line bg-ink/95 p-1 text-xs shadow-inner"
+          >
             <button
               type="button"
+              suppressHydrationWarning
               onClick={() => setMode("title")}
-              className={`flex-1 rounded-full px-3 py-2 transition-colors ${
-                mode === "title" ? "bg-mint text-ink" : "text-paper/60"
-              }`}
+              className={`flex-1 rounded-full px-3 py-2 transition-colors ${mode === "title"
+                ? "bg-mint text-ink font-semibold shadow-sm"
+                : "text-paper/85 hover:text-paper"
+                }`}
             >
               By title
             </button>
             <button
               type="button"
+              suppressHydrationWarning
               onClick={() => setMode("id")}
-              className={`flex-1 rounded-full px-3 py-2 transition-colors ${
-                mode === "id" ? "bg-mint text-ink" : "text-paper/60"
-              }`}
+              className={`flex-1 rounded-full px-3 py-2 transition-colors ${mode === "id" ? "bg-mint text-ink font-semibold shadow-sm"
+                : "text-paper/85 hover:text-paper"
+                }`}
             >
               By Conversation ID
             </button>
@@ -77,12 +82,12 @@ export function Hero() {
 
           <form onSubmit={handleSearch}>
             <div className="well flex items-center gap-3 px-4 py-4">
-              {mode === "id" ? <Hash size={18} className="text-mint/70" /> : <Search size={18} className="text-mint/70" />}
+              {mode === "id" ? <Hash size={18} className="text-mint/90" /> : <Search size={18} className="text-mint/90" />}
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={mode === "id" ? "CHV-8F72K9A" : "Search titles…"}
-                className="led-text w-full bg-transparent text-lg outline-none placeholder:text-mint/25"
+                className="led-text w-full bg-transparent text-lg outline-none placeholder:text-mint/55"
               />
             </div>
             <button type="submit" className="key-button key-button-accent mt-4 w-full py-3 text-sm font-semibold">
@@ -90,8 +95,8 @@ export function Hero() {
             </button>
           </form>
 
-          <p className="mt-4 text-center text-xs text-paper/40">
-            Prefer to browse? <a href="#browse" className="text-gold hover:underline">Jump to Browse Conversations</a>
+          <p className="mt-4 text-center text-xs text-paper/65">
+            Prefer to browse? <a href="#browse" className="font-medium text-gold hover:text-mint transition-colors hover:underline">Jump to Browse Conversations</a>
           </p>
         </div>
       </div>

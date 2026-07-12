@@ -46,9 +46,13 @@ export function Navbar() {
       )}
     >
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5 md:px-8">
-        <Link href="#top" className="flex items-center gap-2.5">
-          <Image src={LOGO_URL} alt="Chive" width={28} height={28} className="rounded-md" />
-          <span className="font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight text-paper">
+        <Link
+          href="#top"
+          className="group flex items-center gap-3 transition-all duration-300 hover:opacity-95"
+        >
+          <div className="relative h-7 w-7 shrink-0"> <Image src={LOGO_URL} alt="Chive" fill className="object-contain scale-450 -translate-x-5" priority /> </div>
+
+          <span className="font-[family-name:var(--font-display)] text-2xl font-extrabold tracking-tight text-paper transition-colors group-hover:text-mint">
             Chive
           </span>
         </Link>
@@ -58,7 +62,7 @@ export function Navbar() {
             <li key={link.href}>
               <a
                 href={link.href}
-                className="flex items-center gap-2 rounded-full px-4 py-2 text-sm text-paper/70 transition-colors hover:text-paper"
+                className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-paper/85 transition-all duration-200 hover:bg-surface hover:text-paper"
               >
                 <span className="indicator-dot" />
                 {link.label}
@@ -71,7 +75,7 @@ export function Navbar() {
           <button
             aria-label="Toggle dark or light mode"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            disabled={!mounted} className="key-button flex h-10 w-10 items-center justify-center text-paper/80"
+            disabled={!mounted} className="key-button flex h-10 w-10 items-center justify-center text-paper shadow-sm transition-all hover:scale-105 hover:shadow-md"
           >
             {mounted ? (
               theme === "dark" ? (
@@ -84,7 +88,7 @@ export function Navbar() {
             )}          </button>
           <a
             href="#publish"
-            className="key-button key-button-accent px-5 py-2.5 text-sm font-semibold"
+            className="key-button key-button-accent px-5 py-2.5 text-sm font-semibold shadow-md transition-all hover:scale-[1.02] hover:shadow-lg"
           >
             Publish
           </a>
@@ -100,14 +104,14 @@ export function Navbar() {
       </nav>
 
       {open && (
-        <div className="mx-4 mb-4 rounded-2xl border border-surface-line bg-surface/95 p-4 backdrop-blur md:hidden">
+        <div className="mx-4 mb-4 rounded-3xl border border-surface-line bg-surface/95 p-5 shadow-xl backdrop-blur-md md:hidden">
           <ul className="flex flex-col gap-1">
             {NAV_LINKS.map((link) => (
               <li key={link.href}>
                 <a
                   href={link.href}
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-3 py-3 text-sm text-paper/80"
+                  className="flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-medium text-paper/90 transition-colors hover:bg-ink/10"
                 >
                   <span className="indicator-dot" />
                   {link.label}
@@ -119,7 +123,7 @@ export function Navbar() {
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               disabled={!mounted}
-              className="key-button flex h-10 w-10 items-center justify-center text-paper/80"
+              className="key-button flex h-10 w-10 items-center justify-center font-medium text-paper/90 transition-colors hover:bg-ink/10"
               aria-label="Toggle dark or light mode"
             >
               {mounted ? (
@@ -134,7 +138,7 @@ export function Navbar() {
             <a
               href="#publish"
               onClick={() => setOpen(false)}
-              className="key-button key-button-accent flex-1 px-5 py-2.5 text-center text-sm font-semibold"
+              className="key-button key-button-accent flex-1 px-5 py-2.5 text-center text-sm font-semibold shadow-md transition-all hover:scale-[1.02]"
             >
               Publish a conversation
             </a>
