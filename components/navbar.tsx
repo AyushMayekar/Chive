@@ -1,6 +1,5 @@
 "use client";
-
-import Image from "next/image";
+import { Logo } from "@/components/ui/logo";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
@@ -14,10 +13,6 @@ const NAV_LINKS = [
   { href: "#publish", label: "Publish" },
   { href: "#contact", label: "Contact" },
 ];
-
-const LOGO_URL =
-  process.env.NEXT_PUBLIC_CHIVE_LOGO_URL ??
-  "https://res.cloudinary.com/dpuqctqfl/image/upload/v1781440274/ChiveLogo_oqucmu.png";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -45,24 +40,15 @@ export function Navbar() {
           : "border-b border-transparent bg-transparent"
       )}
     >
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5 md:px-8">
-        <Link
-          href="#top"
-          className="group flex items-center gap-3 transition-all duration-300 hover:opacity-95"
-        >
-          <div className="relative h-7 w-7 shrink-0"> <Image src={LOGO_URL} alt="Chive" fill className="object-contain scale-450 -translate-x-5" priority /> </div>
+      <nav className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-4 sm:px-7 lg:px-8">
+        <Logo boxSize={40} scale={1.8} />
 
-          <span className="font-[family-name:var(--font-display)] text-2xl font-extrabold tracking-tight text-paper transition-colors group-hover:text-mint">
-            Chive
-          </span>
-        </Link>
-
-        <ul className="hidden items-center gap-1 md:flex">
+        <ul className="hidden flex-1 items-center justify-center gap-3 lg:gap-5 md:flex">
           {NAV_LINKS.map((link) => (
             <li key={link.href}>
               <a
                 href={link.href}
-                className="flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium text-paper/85 transition-all duration-200 hover:bg-surface hover:text-paper"
+                className="flex items-center gap-2 rounded-full px-2 lg:px-4 py-2 text-sm font-medium text-paper/85 transition-all duration-200 hover:bg-surface hover:text-paper"
               >
                 <span className="indicator-dot" />
                 {link.label}
@@ -71,7 +57,7 @@ export function Navbar() {
           ))}
         </ul>
 
-        <div className="hidden items-center gap-3 md:flex">
+        <div className="hidden shrink-0 items-center gap-2 lg:gap-3 md:flex">
           <button
             aria-label="Toggle dark or light mode"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -88,7 +74,7 @@ export function Navbar() {
             )}          </button>
           <a
             href="#publish"
-            className="key-button key-button-accent px-5 py-2.5 text-sm font-semibold shadow-md transition-all hover:scale-[1.02] hover:shadow-lg"
+            className="key-button key-button-accent px-5 lg:px-6 py-2.5 text-sm font-semibold shadow-md transition-all hover:scale-105"
           >
             Publish
           </a>

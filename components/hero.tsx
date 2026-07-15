@@ -21,7 +21,10 @@ export function Hero() {
   }
 
   return (
-    <section id="top" className="relative overflow-hidden px-5 pb-20 pt-36 md:px-8 md:pt-44">
+    <section
+      id="top"
+      className="relative overflow-hidden px-5 pb-20 pt-32 sm:pt-36 lg:px-8 lg:pt-44"
+    >
       <div
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[560px] opacity-70"
         style={{
@@ -29,13 +32,13 @@ export function Hero() {
             "radial-gradient(600px 320px at 50% -10%, rgba(127,239,189,0.14), transparent 70%)",
         }}
       />
-      <div className="mx-auto grid max-w-6xl gap-12 md:grid-cols-[1.05fr_0.95fr] md:items-center">
+      <div className="mx-auto grid max-w-6xl gap-14 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div className="reveal">
           <span className="inline-flex items-center gap-2 rounded-full border border-surface-line bg-surface px-3 py-1 text-xs uppercase tracking-[0.18em] text-gold">
             <Sparkles size={13} />
             A public library of AI conversations
           </span>
-          <h1 className="mt-6 font-[family-name:var(--font-display)] text-4xl font-semibold leading-[1.08] tracking-tight text-paper md:text-6xl">
+          <h1 className="mt-6 font-[family-name:var(--font-display)] text-4xl font-semibold leading-[1.08] tracking-tight text-paper sm:text-5xl lg:text-6xl">
             Don&apos;t lose great conversations.
             <br />
             <span className="text-mint">Chive</span> them.
@@ -53,7 +56,7 @@ export function Hero() {
           </ul>
         </div>
 
-        <div className="reveal panel p-6 md:p-7">
+        <div className="reveal panel mx-auto w-full max-w-xl p-6 lg:max-w-none lg:p-7">
           <div
             className="mb-5 flex items-center gap-1 rounded-full border border-surface-line bg-ink/95 p-1 text-xs shadow-inner"
           >
@@ -81,7 +84,7 @@ export function Hero() {
           </div>
 
           <form onSubmit={handleSearch}>
-            <div className="well flex items-center gap-3 px-4 py-4">
+            <div className="well flex items-center gap-3 rounded-2xl px-5 py-4">
               {mode === "id" ? <Hash size={18} className="text-mint/90" /> : <Search size={18} className="text-mint/90" />}
               <input
                 value={query}
@@ -90,7 +93,7 @@ export function Hero() {
                 className="led-text w-full bg-transparent text-lg outline-none placeholder:text-mint/55"
               />
             </div>
-            <button type="submit" className="key-button key-button-accent mt-4 w-full py-3 text-sm font-semibold">
+            <button type="submit" className="key-button key-button-accent mt-5 w-full py-3.5 text-sm font-semibold shadow-md transition-all hover:scale-[1.01]">
               {mode === "id" ? "Look up conversation" : "Search Chive"}
             </button>
           </form>
