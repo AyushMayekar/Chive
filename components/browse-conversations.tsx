@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MOCK_CONVERSATIONS } from "@/lib/mock-data";
-import { CATEGORY_OPTIONS, LLM_OPTIONS, Category, Llm } from "@/lib/types";
+import type { Conversation } from "@/lib/types";
 import { ConversationCard } from "./conversation-card";
 import { Search } from "lucide-react";
 import {
@@ -13,22 +12,32 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export function BrowseConversations() {
+export function BrowseConversations({
+  conversations,
+  categories,
+  llms,
+}: {
+  conversations: Conversation[];
+  categories: string[];
+  llms: string[];
+}) {
   const [query, setQuery] = useState("");
-  const [category, setCategory] = useState<Category | "All">("All");
-  const [llm, setLlm] = useState<Llm | "All">("All");
+  const [category, setCategory] = useState<string>("All");
+  const [llm, setLlm] = useState<string>("All");
 
   const results = useMemo(() => {
-    return MOCK_CONVERSATIONS.filter((c) => {
-      const matchesQuery =
-        !query.trim() ||
-        c.title.toLowerCase().includes(query.trim().toLowerCase()) ||
-        c.conversation_id.toLowerCase().includes(query.trim().toLowerCase());
-      const matchesCategory = category === "All" || c.category === category;
-      const matchesLlm = llm === "All" || c.llm === llm;
-      return matchesQuery && matchesCategory && matchesLlm;
-    }).sort((a, b) => new Date(b.submission_date).getTime() - new Date(a.submission_date).getTime());
-  }, [query, category, llm]);
+    return conversations
+      .filter((c) => {
+        const matchesQuery =
+          !query.trim() ||
+          c.title.toLowerCase().includes(query.trim().toLowerCase()) ||
+          c.conversation_id.toLowerCase().includes(query.trim().toLowerCase());
+        const matchesCategory = category === "All" || c.category === category;
+        const matchesLlm = llm === "All" || c.llm === llm;
+        return matchesQuery && matchesCategory && matchesLlm;
+      })
+      .sort((a, b) => new Date(b.submission_date).getTime() - new Date(a.submission_date).getTime());
+  }, [conversations, query, category, llm]);
 
   return (
     <section id="browse" className="px-5 py-20 md:px-8 md:py-28">
@@ -54,10 +63,7 @@ export function BrowseConversations() {
             />
           </div>
 
-          <Select
-            value={category}
-            onValueChange={(value) => setCategory(value as Category | "All")}
-          >
+          <Select value={category} onValueChange={(value) => setCategory(value)}>
             <SelectTrigger className="key-button h-12 w-[210px] rounded-2xl">
               <SelectValue>
                 {(value) => value === "All" ? "All categories" : value}
@@ -67,7 +73,7 @@ export function BrowseConversations() {
             <SelectContent>
               <SelectItem value="All">All categories</SelectItem>
 
-              {CATEGORY_OPTIONS.map((c) => (
+              {categories.map((c) => (
                 <SelectItem key={c} value={c}>
                   {c}
                 </SelectItem>
@@ -75,10 +81,7 @@ export function BrowseConversations() {
             </SelectContent>
           </Select>
 
-          <Select
-            value={llm}
-            onValueChange={(value) => setLlm(value as Llm | "All")}
-          >
+          <Select value={llm} onValueChange={(value) => setLlm(value)}>
             <SelectTrigger className="key-button h-12 w-[210px] rounded-2xl">
               <SelectValue>
                 {(value) => (value === "All" ? "All models" : value)}
@@ -88,7 +91,7 @@ export function BrowseConversations() {
             <SelectContent>
               <SelectItem value="All">All models</SelectItem>
 
-              {LLM_OPTIONS.map((l) => (
+              {llms.map((l) => (
                 <SelectItem key={l} value={l}>
                   {l}
                 </SelectItem>

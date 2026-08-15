@@ -1,6 +1,6 @@
 import { Share2, UploadCloud, ShieldCheck, Compass } from "lucide-react";
 
-const STEPS = [
+const DEFAULT_STEPS = [
   {
     icon: Share2,
     title: "Share",
@@ -23,7 +23,25 @@ const STEPS = [
   },
 ];
 
-export function HowItWorks() {
+export type HowItWorksSettings = Partial<{
+  step1_title: string; step1_body: string;
+  step2_title: string; step2_body: string;
+  step3_title: string; step3_body: string;
+  step4_title: string; step4_body: string;
+}>;
+
+function resolveSteps(settings?: HowItWorksSettings) {
+  return DEFAULT_STEPS.map((fallback, i) => {
+    const n = i + 1;
+    const title = settings?.[`step${n}_title` as keyof HowItWorksSettings];
+    const body = settings?.[`step${n}_body` as keyof HowItWorksSettings];
+    return { ...fallback, title: title || fallback.title, body: body || fallback.body };
+  });
+}
+
+export function HowItWorks({ settings }: { settings?: HowItWorksSettings }) {
+  const steps = resolveSteps(settings);
+
   return (
     <section id="how-it-works" className="px-5 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
@@ -38,7 +56,7 @@ export function HowItWorks() {
           <div
   className="absolute left-8 right-8 top-8 hidden h-[2px] rounded-full bg-surface-line/80 md:block"
 />
-          {STEPS.map((step, i) => {
+          {steps.map((step, i) => {
             const Icon = step.icon;
             return (
               <div

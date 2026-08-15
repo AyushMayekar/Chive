@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, type FormEvent, type ReactNode } from "react";
-import { CATEGORY_OPTIONS, LLM_OPTIONS, Category, Llm } from "@/lib/types";
-import { generateConversationId } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import {
   validateShareUrl,
@@ -24,26 +22,38 @@ type FormState = {
   shareUrl: string;
   title: string;
   submissionDate: string;
-  llm: Llm | "";
-  category: Category | "";
+  llm: string;
+  category: string;
   summary: string;
   publisherName: string;
   publisherEmail: string;
 };
 
-const INITIAL: FormState = {
-  shareUrl: "",
-  title: "",
-  submissionDate: new Date().toISOString().slice(0, 10),
-  llm: "",
-  category: "",
-  summary: "",
-  publisherName: "",
-  publisherEmail: "",
-};
+const DEFAULT_SLA_TEXT = "Review generally takes around 10 days.";
 
-export function PublishForm() {
-  const [form, setForm] = useState<FormState>(INITIAL);
+function initialState(): FormState {
+  return {
+    shareUrl: "",
+    title: "",
+    submissionDate: new Date().toISOString().slice(0, 10),
+    llm: "",
+    category: "",
+    summary: "",
+    publisherName: "",
+    publisherEmail: "",
+  };
+}
+
+export function PublishForm({
+  categories,
+  llms,
+  slaText = DEFAULT_SLA_TEXT,
+}: {
+  categories: string[];
+  llms: string[];
+  slaText?: string;
+}) {
+  const [form, setForm] = useState<FormState>(initialState());
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
@@ -78,29 +88,34 @@ export function PublishForm() {
     if (!validate()) return;
 
     setSubmitting(true);
-    const newId = generateConversationId();
 
     try {
       if (supabase) {
-        const { error } = await supabase.from("conversations").insert({
-          conversation_id: newId,
-          title: form.title.trim(),
-          summary: form.summary.trim(),
-          publisher_name: form.publisherName.trim() || null,
-          publisher_email: form.publisherEmail.trim() || null,
-          share_url: form.shareUrl.trim(),
-          llm: form.llm,
-          category: form.category,
-          submission_date: form.submissionDate,
-          status: "Pending",
-        });
+        // conversation_id and status are assigned by a database trigger
+        // (§2.6 of the Admin PRD) — the client never supplies either.
+        const { data, error } = await supabase
+          .from("conversations")
+          .insert({
+            title: form.title.trim(),
+            summary: form.summary.trim(),
+            publisher_name: form.publisherName.trim() || null,
+            publisher_email: form.publisherEmail.trim() || null,
+            share_url: form.shareUrl.trim(),
+            llm: form.llm,
+            category: form.category,
+            submission_date: form.submissionDate,
+          })
+          .select("conversation_id")
+          .single();
         if (error) throw error;
+        setConversationId(data.conversation_id as string);
+      } else {
+        // No Supabase configured yet (local/dev) — complete the flow with a
+        // locally-shaped placeholder so the UI can still be reviewed.
+        setConversationId("CHV-PREVIEW");
       }
-      // No Supabase configured yet (local/dev) — still complete the flow
-      // so the UI can be reviewed end-to-end before credentials exist.
-      setConversationId(newId);
-      setForm(INITIAL);
-    } catch (err) {
+      setForm(initialState());
+    } catch {
       setErrors({ shareUrl: "Something went wrong submitting your conversation. Try again." });
     } finally {
       setSubmitting(false);
@@ -154,16 +169,13 @@ export function PublishForm() {
             </Field>
 
             <Field label="LLM" required error={errors.llm}>
-              <Select
-                value={form.llm}
-                onValueChange={(value) => update("llm", value as Llm)}
-              >
+              <Select value={form.llm} onValueChange={(value) => update("llm", value)}>
                 <SelectTrigger className="chive-input flex h-12 items-center justify-between rounded-2xl">
                   <SelectValue placeholder="Select a model" />
                 </SelectTrigger>
 
                 <SelectContent>
-                  {LLM_OPTIONS.map((l) => (
+                  {llms.map((l) => (
                     <SelectItem key={l} value={l}>
                       {l}
                     </SelectItem>
@@ -174,16 +186,13 @@ export function PublishForm() {
           </div>
 
           <Field label="Category" required error={errors.category}>
-            <Select
-              value={form.category}
-              onValueChange={(value) => update("category", value as Category)}
-            >
+            <Select value={form.category} onValueChange={(value) => update("category", value)}>
               <SelectTrigger className="chive-input flex h-12 items-center justify-between rounded-2xl">
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
 
               <SelectContent>
-                {CATEGORY_OPTIONS.map((c) => (
+                {categories.map((c) => (
                   <SelectItem key={c} value={c}>
                     {c}
                   </SelectItem>
@@ -225,7 +234,7 @@ export function PublishForm() {
 
           <p className="rounded-2xl border border-surface-line bg-surface/40 px-4 py-3 text-sm leading-6 text-paper/75">
             By submitting, you confirm the share link is public, the content is safe, and you own
-            or have permission to share it. Review generally takes around 10 days.
+            or have permission to share it. {slaText}
           </p>
 
           <button
@@ -240,7 +249,7 @@ export function PublishForm() {
       </div>
 
       {conversationId && (
-        <SuccessModal conversationId={conversationId} onClose={() => setConversationId(null)} />
+        <SuccessModal conversationId={conversationId} slaText={slaText} onClose={() => setConversationId(null)} />
       )}
     </section>
   );
@@ -273,7 +282,15 @@ function Field({
   );
 }
 
-function SuccessModal({ conversationId, onClose }: { conversationId: string; onClose: () => void }) {
+function SuccessModal({
+  conversationId,
+  slaText,
+  onClose,
+}: {
+  conversationId: string;
+  slaText: string;
+  onClose: () => void;
+}) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-5">
       <div className="panel relative w-full max-w-md rounded-3xl p-8 text-center shadow-2xl">
@@ -299,8 +316,7 @@ function SuccessModal({ conversationId, onClose }: { conversationId: string; onC
 
         <p className="mt-5 rounded-xl bg-surface/40 px-4 py-3 text-sm leading-6 text-paper/75">
           Save this Conversation ID — use it to search your submission, track whether it&apos;s
-          been published, or reference it when contacting Chive Support. Review generally takes
-          around 10 days.
+          been published, or reference it when contacting Chive Support. {slaText}
         </p>
 
         <a

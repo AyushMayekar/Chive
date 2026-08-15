@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Navbar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
-import { getConversationByConversationId } from "@/lib/mock-data";
+import { getApprovedConversationByConversationId, getSiteSettings } from "@/lib/public-data";
 
 export default async function ConversationDetailPage({
   params,
@@ -11,15 +11,20 @@ export default async function ConversationDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const conversation = getConversationByConversationId(id);
+  const [conversation, settings] = await Promise.all([
+    getApprovedConversationByConversationId(id),
+    getSiteSettings(),
+  ]);
 
   if (!conversation) {
     notFound();
   }
 
+  const logoUrl = (settings.logo.url as string) || undefined;
+
   return (
     <>
-      <Navbar />
+      <Navbar logoUrl={logoUrl} />
       <main className="px-5 pb-24 pt-32 md:px-8 md:pt-40">
         <div className="mx-auto max-w-2xl">
           <Link
@@ -71,7 +76,7 @@ export default async function ConversationDetailPage({
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer logoUrl={logoUrl} />
     </>
   );
 }

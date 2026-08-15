@@ -31,3 +31,4 @@ pnpm-debug.log*
 *.tsbuildinfo
 .vercel/
 Inspi/
+seed-dummy-conversations.sql

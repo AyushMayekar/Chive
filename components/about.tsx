@@ -1,4 +1,4 @@
-const POINTS = [
+const DEFAULT_POINTS = [
   {
     title: "Why Chive exists",
     body:
@@ -21,7 +21,32 @@ const POINTS = [
   },
 ];
 
-export function About() {
+export type AboutSettings = Partial<{
+  card1_title: string;
+  card1_body: string;
+  card2_title: string;
+  card2_body: string;
+  card3_title: string;
+  card3_body: string;
+  card4_title: string;
+  card4_body: string;
+}>;
+
+function resolvePoints(settings?: AboutSettings) {
+  return DEFAULT_POINTS.map((fallback, i) => {
+    const n = i + 1;
+    const title = settings?.[`card${n}_title` as keyof AboutSettings];
+    const body = settings?.[`card${n}_body` as keyof AboutSettings];
+    return {
+      title: title || fallback.title,
+      body: body || fallback.body,
+    };
+  });
+}
+
+export function About({ settings }: { settings?: AboutSettings }) {
+  const points = resolvePoints(settings);
+
   return (
     <section id="about" className="px-5 py-20 md:px-8 md:py-28">
       <div className="mx-auto max-w-6xl">
@@ -33,7 +58,7 @@ export function About() {
         </div>
 
         <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {POINTS.map((point) => (
+          {points.map((point) => (
             <div key={point.title} className="reveal panel panel-hover rounded-3xl p-7">
               <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-paper">
                 {point.title}

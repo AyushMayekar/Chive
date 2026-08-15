@@ -4,9 +4,9 @@ import { useState, type FormEvent } from "react";
 import { Mail, Send } from "lucide-react";
 import { validateEmail, validateRequired } from "@/lib/validation";
 
-export function Contact() {
+export function Contact({ email = "hello@chive.app" }: { email?: string }) {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [emailField, setEmailField] = useState("");
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
   const [sent, setSent] = useState(false);
@@ -16,7 +16,7 @@ export function Contact() {
     const next: typeof errors = {};
     const nameErr = validateRequired(name, "Name");
     if (nameErr) next.name = nameErr;
-    const emailErr = validateRequired(email, "Email") ?? validateEmail(email);
+    const emailErr = validateRequired(emailField, "Email") ?? validateEmail(emailField);
     if (emailErr) next.email = emailErr;
     const messageErr = validateRequired(message, "Message");
     if (messageErr) next.message = messageErr;
@@ -25,7 +25,7 @@ export function Contact() {
     if (Object.keys(next).length === 0) {
       setSent(true);
       setName("");
-      setEmail("");
+      setEmailField("");
       setMessage("");
     }
   }
@@ -57,8 +57,8 @@ export function Contact() {
               <span className="mb-1.5 block text-sm text-paper/90 font-medium">Email</span>
               <input
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={emailField}
+                onChange={(e) => setEmailField(e.target.value)}
                 className="chive-input"
               />
               {errors.email && <span className="mt-1.5 block text-xs text-red-400">{errors.email}</span>}
@@ -94,7 +94,7 @@ export function Contact() {
           <>
   Or reach us directly at{" "}
   <span className="font-medium text-mint">
-    hello@chive.app
+    {email}
   </span>
 </>
         </p>

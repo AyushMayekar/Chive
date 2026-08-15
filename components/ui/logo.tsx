@@ -23,6 +23,12 @@ type LogoProps = {
      * 1 = actual asset size within the box, 1.6-2 usually reads as "bigger logo".
      */
     scale?: number;
+    /**
+     * Optional runtime override for the logo image (Admin's Content →
+     * Logo setting, §6.12). Falls back to the local static asset when not
+     * provided, so local dev keeps working with zero Supabase setup.
+     */
+    src?: string;
 };
 
 export function Logo({
@@ -33,6 +39,7 @@ export function Logo({
     showText = true,
     boxSize = 58,
     scale = 1,
+    src,
 }: LogoProps) {
     return (
         <Link
@@ -50,7 +57,7 @@ export function Logo({
                 {/* `fill` takes the image out of normal flow (position: absolute),
            so scaling it visually does not push on surrounding elements. */}
                 <Image
-                    src={LOGO_URL}
+                    src={src || LOGO_URL}
                     alt="Chive"
                     fill
                     priority

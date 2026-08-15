@@ -4,10 +4,27 @@ import { useState, type FormEvent } from "react";
 import { Search, Hash, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export function Hero() {
+export type HeroSettings = Partial<{
+  eyebrow: string;
+  subheadline: string;
+  features: string[];
+}>;
+
+const DEFAULTS: Required<HeroSettings> = {
+  eyebrow: "A public library of AI conversations",
+  subheadline:
+    "Discover valuable AI conversations from developers, researchers, students, founders and curious minds — sourced from ChatGPT, Claude, Gemini, Perplexity and DeepSeek.",
+  features: ["Search conversations", "Browse latest submissions", "Find by Conversation ID", "No account required"],
+};
+
+export function Hero({ settings }: { settings?: HeroSettings }) {
   const [mode, setMode] = useState<"title" | "id">("title");
   const [query, setQuery] = useState("");
   const router = useRouter();
+
+  const eyebrow = settings?.eyebrow || DEFAULTS.eyebrow;
+  const subheadline = settings?.subheadline || DEFAULTS.subheadline;
+  const features = settings?.features?.length ? settings.features : DEFAULTS.features;
 
   function handleSearch(e: FormEvent) {
     e.preventDefault();
@@ -36,23 +53,19 @@ export function Hero() {
         <div className="reveal">
           <span className="inline-flex items-center gap-2 rounded-full border border-surface-line bg-surface px-3 py-1 text-xs uppercase tracking-[0.18em] text-gold">
             <Sparkles size={13} />
-            A public library of AI conversations
+            {eyebrow}
           </span>
           <h1 className="mt-6 font-[family-name:var(--font-display)] text-4xl font-semibold leading-[1.08] tracking-tight text-paper sm:text-5xl lg:text-6xl">
             Don&apos;t lose great conversations.
             <br />
             <span className="text-mint">Chive</span> them.
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-paper/80 md:text-lg">
-            Discover valuable AI conversations from developers, researchers, students, founders
-            and curious minds — sourced from ChatGPT, Claude, Gemini, Perplexity and DeepSeek.
-          </p>
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-paper/80 md:text-lg">{subheadline}</p>
 
           <ul className="mt-7 flex flex-wrap gap-x-6 gap-y-2 text-sm text-paper/75">
-            <li>Search conversations</li>
-            <li>Browse latest submissions</li>
-            <li>Find by Conversation ID</li>
-            <li>No account required</li>
+            {features.map((f) => (
+              <li key={f}>{f}</li>
+            ))}
           </ul>
         </div>
 

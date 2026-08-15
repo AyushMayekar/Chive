@@ -8,24 +8,42 @@ import {
 
 import { Logo } from "@/components/ui/logo";
 
-export function Footer() {
+export type FooterSettings = Partial<{
+  tagline: string;
+  github: string;
+  linkedin: string;
+  instagram: string;
+  whatsapp: string;
+  copyright_name: string;
+}>;
+
+const DEFAULTS: Required<FooterSettings> = {
+  tagline: "Don't lose great conversations. Chive them.",
+  github: "https://github.com/AyushMayekar",
+  linkedin: "https://linkedin.com/in/ayush-mayekar-b9b883284",
+  instagram: "https://www.instagram.com/ayush_mayekar_21",
+  whatsapp: "https://wa.me/8657153773",
+  copyright_name: "Chive",
+};
+
+export function Footer({ settings, logoUrl }: { settings?: FooterSettings; logoUrl?: string }) {
+  const s = { ...DEFAULTS, ...settings };
+
   return (
     <footer className="border-t border-surface-line px-5 py-10 md:px-8">
       <div className="mx-auto grid max-w-7xl gap-8 text-sm md:grid-cols-3 md:items-center">
 
         {/* Brand */}
-        <Logo className="justify-center md:justify-self-start" boxSize={36} scale={1.7} />
+        <Logo className="justify-center md:justify-self-start" boxSize={36} scale={1.7} src={logoUrl} />
 
         {/* Tagline + Socials */}
         <div className="flex flex-col items-center gap-4">
-          <p className="max-w-sm text-center text-sm leading-6 text-paper/60">
-            Don't lose great conversations. Chive them.
-          </p>
+          <p className="max-w-sm text-center text-sm leading-6 text-paper/60">{s.tagline}</p>
 
           <div className="panel flex items-center gap-3 rounded-full px-4 py-2">
 
             <Link
-              href="https://github.com/AyushMayekar"
+              href={s.github}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
@@ -35,7 +53,7 @@ export function Footer() {
             </Link>
 
             <Link
-              href="https://linkedin.com/in/ayush-mayekar-b9b883284"
+              href={s.linkedin}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="LinkedIn"
@@ -45,7 +63,7 @@ export function Footer() {
             </Link>
 
             <Link
-              href="https://www.instagram.com/ayush_mayekar_21"
+              href={s.instagram}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -55,7 +73,7 @@ export function Footer() {
             </Link>
 
             <Link
-              href="https://wa.me/8657153773"
+              href={s.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="WhatsApp"
@@ -69,7 +87,7 @@ export function Footer() {
 
         {/* Copyright */}
         <p className="self-center text-center text-paper/55 md:justify-self-end md:text-right">
-          © {new Date().getFullYear()} Chive. All rights reserved.
+          © {new Date().getFullYear()} {s.copyright_name}. All rights reserved.
         </p>
 
       </div>

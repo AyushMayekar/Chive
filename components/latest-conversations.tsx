@@ -1,8 +1,8 @@
-import { MOCK_CONVERSATIONS } from "@/lib/mock-data";
+import type { Conversation } from "@/lib/types";
 import { ConversationCard } from "./conversation-card";
 
-export function LatestConversations() {
-  const latest = [...MOCK_CONVERSATIONS]
+export function LatestConversations({ conversations }: { conversations: Conversation[] }) {
+  const latest = [...conversations]
     .sort((a, b) => new Date(b.submission_date).getTime() - new Date(a.submission_date).getTime())
     .slice(0, 3);
 

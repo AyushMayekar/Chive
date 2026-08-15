@@ -14,7 +14,7 @@ const NAV_LINKS = [
   { href: "#contact", label: "Contact" },
 ];
 
-export function Navbar() {
+export function Navbar({ logoUrl }: { logoUrl?: string }) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -41,7 +41,7 @@ export function Navbar() {
       )}
     >
       <nav className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-4 sm:px-7 lg:px-8">
-        <Logo boxSize={40} scale={1.8} />
+        <Logo boxSize={40} scale={1.8} src={logoUrl} />
 
         <ul className="hidden flex-1 items-center justify-center gap-3 lg:gap-5 md:flex">
           {NAV_LINKS.map((link) => (
