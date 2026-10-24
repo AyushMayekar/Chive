@@ -2,16 +2,16 @@
 
 Thank you for visiting this repository!
 
-This project is currently under active development and is not yet ready for public use. Features, documentation, and code are being added and refined.
+This is a personal hobby project developed alongside other professional commitments, so progress is gradual and updates may be infrequent.
 
 ## 📌 Current Status
 
-- 🚀 Development in progress
-- 🛠️ Features are actively being implemented
-- 📖 Documentation will be added soon
+- 🚀 Development is ongoing at a flexible pace
+- 🛠️ Features are being implemented incrementally
+- 📖 Documentation will evolve as the project progresses
 
-Stay tuned for updates!
+Thank you for your patience and interest!
 
 ---
 
-⭐ If you're interested in this project, consider starring the repository to stay updated with future releases.
+⭐ If you find this project interesting, consider starring the repository to follow its progress.
